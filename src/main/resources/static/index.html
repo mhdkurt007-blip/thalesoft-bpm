@@ -206,7 +206,7 @@
             </div>
             <div class="text-start mb-4">
                 <label class="form-label text-muted small fw-bold">Parola</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="1234">
+                <input type="password" id="loginPassword" class="form-control" placeholder="******">
             </div>
             <button class="btn btn-primary w-100 py-2" onclick="performLogin()">Sisteme Giriş Yap</button>
         </div>
@@ -278,7 +278,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8080/api/bpm';
+        const API_URL = window.location.origin + '/api/bpm';
         let globalTemplates = {}; 
         let currentRole = '';
         let currentUsername = '';
