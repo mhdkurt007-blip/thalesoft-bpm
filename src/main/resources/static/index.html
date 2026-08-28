@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thalesoft Portal - macOS Style</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Apple Renk Paleti */
+            --apple-bg: #F5F5F7;
+            --apple-surface: #FFFFFF;
+            --apple-text: #1D1D1F;
+            --apple-muted: #86868B;
+            --apple-blue: #0071E3;
+            --apple-blue-hover: #0077ED;
+            --apple-border: rgba(0, 0, 0, 0.08);
+            --apple-radius: 18px;
+        }
+
+        body {
+            /* Apple cihazlarda SF Pro, diğerlerinde en temiz sistem fontunu çeker */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--apple-bg);
+            color: var(--apple-text);
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- ANİMASYON --- */
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- KART TASARIMLARI (Minimal ve Yuvarlak) --- */
+        .card {
+            background: var(--apple-surface);
+            border: 1px solid var(--apple-border);
+            border-radius: var(--apple-radius);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02); /* Çok hafif derinlik */
+        }
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--apple-border);
+            padding: 1.5rem;
+            font-weight: 600;
+            font-size: 1.15rem;
+            color: var(--apple-text);
+        }
+        .card-body { padding: 1.5rem; }
+
+        /* --- BUTONLAR (Hap Şeklinde - Capsule) --- */
+        .btn {
+            border-radius: 20px;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border: none;
+            box-shadow: none !important;
+        }
+        .btn-primary { 
+            background: var(--apple-text); /* Apple tarzı stark black ana buton */
+            color: white; 
+        }
+        .btn-primary:hover { 
+            background: #333336; 
+            transform: scale(1.02); 
+        }
+        .btn-success { 
+            background: var(--apple-blue); /* Onay butonu Apple Mavisi */
+            color: white; 
+        }
+        .btn-success:hover { 
+            background: var(--apple-blue-hover); 
+        }
+        .btn-info { 
+            background: #E8E8ED; 
+            color: var(--apple-text); 
+        }
+        .btn-info:hover { 
+            background: #D1D1D6; 
+        }
+        
+        /* --- FORM ELEMANLARI (iOS Tarzı Inputlar) --- */
+        .form-control, .form-select {
+            background-color: rgba(0, 0, 0, 0.04);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 400;
+            transition: all 0.2s ease;
+            color: var(--apple-text);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--apple-surface);
+            border-color: var(--apple-blue);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        }
+
+        /* --- TABLO --- */
+        .table { --bs-table-bg: transparent; margin-bottom: 0; }
+        .table th { 
+            border-bottom: 1px solid var(--apple-border); 
+            color: var(--apple-muted); 
+            font-weight: 500; 
+            font-size: 0.85rem; 
+            padding: 1rem 0.5rem; 
+        }
+        .table td { 
+            padding: 1.2rem 0.5rem; 
+            vertical-align: middle; 
+            border-bottom: 1px solid var(--apple-border); 
+            font-size: 0.95rem;
+        }
+
+        /* --- DURUM GÖSTERGELERİ --- */
+        .badge { 
+            padding: 0.5em 0.8em; 
+            font-weight: 500; 
+            font-size: 0.75rem; 
+            letter-spacing: 0.5px;
+        }
+        .status-ACTIVE { color: var(--apple-blue); font-weight: 600; }
+        .status-COMPLETED { color: #34C759; font-weight: 600; } /* Apple Yeşili */
+
+        /* --- GİRİŞ EKRANI (macOS Kilit Ekranı Hissiyatı) --- */
+        #loginScreenWrapper {
+            position: fixed; inset: 0;
+            /* Logodaki Mavi'den Yeşile Kusursuz Gradient Geçişi */
+            background: linear-gradient(135deg, #10a3f9 0%, #35eb9a 100%);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.5); /* Yarı saydam */
+            backdrop-filter: blur(40px); /* Meşhur Buzlu Cam (Glassmorphism) Efekti */
+            -webkit-backdrop-filter: blur(40px);
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+            animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            text-align: center;
+        }
+        .mac-avatar-img {
+            width: 85px; 
+            height: auto;
+            max-height: 85px;
+            margin: 0 auto 1.5rem auto;
+            display: block;
+            object-fit: contain; 
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        }
+
+        /* --- NAVBAR (macOS Menu Bar Hissiyatı) --- */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--apple-border);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-bottom: 2rem;
+        }
+        
+        #dashboardScreen { display: none; animation: scaleUp 0.4s ease forwards; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. GİRİŞ (LOGIN) EKRANI -->
+    <div id="loginScreenWrapper">
+        <div class="login-card">
+            <img src="logo.png" class="mac-avatar-img" alt="Thalesoft Logo">
+            <h4 class="fw-bold mb-1">Workspace</h4>
+            <p class="text-muted mb-4 small">BPM Motoru Yönetim Paneli</p>
+            
+            <div class="text-start mb-3">
+                <label class="form-label text-muted small fw-bold">Giriş Yapılacak Rol</label>
+                <select id="loginRole" class="form-select">
+                    <option value="EMPLOYEE">Standart Çalışan</option>
+                    <option value="MANAGER">Yönetici (Manager)</option>
+                    <option value="IT_SPECIALIST">IT Uzmanı</option>
+                    <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
+                    <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
+                    <option value="HR_SPECIALIST">İnsan Kaynakları</option>
+                </select>
+            </div>
+            <div class="text-start mb-3">
+                <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
+                <!-- İstediğin Serbest Metin Girişi -->
+                <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz">
+            </div>
+            <div class="text-start mb-4">
+                <label class="form-label text-muted small fw-bold">Parola</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="1234">
+            </div>
+            <button class="btn btn-primary w-100 py-2" onclick="performLogin()">Sisteme Giriş Yap</button>
+        </div>
+    </div>
+
+    <!-- 2. ANA SİSTEM (DASHBOARD) EKRANI -->
+    <div id="dashboardScreen">
+        <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <span class="fw-bold fs-5" style="letter-spacing: -0.5px;">Thalesoft</span>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <span class="text-muted small me-3">Hoş geldin, <strong id="loggedInUserInfo" class="text-dark"></strong></span>
+                <button class="btn btn-info btn-sm px-3" onclick="logout()">Çıkış</button>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-4 pb-5" style="max-width: 1400px;">
+            <div class="row g-4">
+                <!-- SÜREÇ BAŞLATMA BÖLÜMÜ -->
+                <div class="col-xl-3 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-header border-0 pb-0 pt-4 px-4">
+                            Yeni Talep
+                        </div>
+                        <div class="card-body px-4">
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-bold">İş Akışı Şablonu</label>
+                                <select id="templateSelect" class="form-select"></select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-bold">Talebi Başlatan</label>
+                                <input type="text" id="initiatorInput" class="form-control" readonly style="opacity: 0.7;">
+                            </div>
+                            <button class="btn btn-primary w-100 mt-2" onclick="startProcess()">Süreci Başlat</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AKTİF İŞLER BÖLÜMÜ -->
+                <div class="col-xl-9 col-lg-8">
+                    <div class="card h-100">
+                        <div class="card-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                            <span>İşlem Kayıtları</span>
+                        </div>
+                        <div class="card-body px-4">
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>Süreç Adı</th>
+                                            <th>Talep Eden</th>
+                                            <th>Durum</th>
+                                            <th>Atanan Rol</th>
+                                            <th class="text-end">Aksiyonlar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="instancesTableBody">
+                                        <!-- JS ile doldurulacak -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api/bpm';
+        let globalTemplates = {}; 
+        let currentRole = '';
+        let currentUsername = '';
+
+        /* MANTIKSAL HİÇBİR ŞEY DEĞİŞMEDİ */
+        function performLogin() {
+            const role = document.getElementById('loginRole').value;
+            const user = document.getElementById('loginUsername').value;
+            const pass = document.getElementById('loginPassword').value;
+
+            if (!user) return alert("Lütfen kullanıcı adı giriniz!");
+            if (pass !== "1234") return alert("Hatalı şifre! (1234 giriniz)");
+
+            currentRole = role;
+            currentUsername = user;
+
+            document.getElementById('loginScreenWrapper').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+
+            document.getElementById('loggedInUserInfo').innerText = `${user} (${role})`;
+            document.getElementById('initiatorInput').value = user;
+
+            loadDashboardData();
+        }
+
+        function logout() {
+            currentRole = ''; currentUsername = '';
+            document.getElementById('loginUsername').value = ''; 
+            document.getElementById('loginPassword').value = ''; 
+            document.getElementById('loginScreenWrapper').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+        }
+
+        async function loadDashboardData() {
+            await fetchTemplates();
+            await fetchInstances();
+        }
+
+        async function fetchTemplates() {
+            const res = await fetch(`${API_URL}/templates`);
+            const templates = await res.json();
+            const select = document.getElementById('templateSelect');
+            select.innerHTML = '';
+            
+            templates.forEach(t => {
+                globalTemplates[t.templateId] = t; 
+                select.innerHTML += `<option value="${t.templateId}">${t.name}</option>`;
+            });
+        }
+
+        async function fetchInstances() {
+            const res = await fetch(`${API_URL}/instances`);
+            const instances = await res.json();
+            const tbody = document.getElementById('instancesTableBody');
+            tbody.innerHTML = '';
+
+            instances.forEach(inst => {
+                let actionButtons = ''; 
+                let requiredRole = '-';
+
+                if (inst.status === 'ACTIVE' && globalTemplates[inst.templateId]) {
+                    requiredRole = globalTemplates[inst.templateId].states[inst.currentState].assigneeRole;
+
+                    if (currentRole === requiredRole) {
+                        // Onayla butonu Apple tarzı Mavi renk (btn-success sınıfı css'de maviye ayarlandı)
+                        actionButtons = `<button class="btn btn-success me-2" onclick="completeTask('${inst.id}', 'APPROVE')">Onayla</button>`;
+                    } else {
+                        actionButtons = `<span class="badge rounded-pill bg-light text-muted border py-2 px-3 me-2">Yetki Bekleniyor</span>`;
+                    }
+                }
+
+                const historyLogs = inst.auditLogs ? inst.auditLogs.join('\\n') : 'Kayıt yok.';
+                const historyButton = `<button class="btn btn-info" onclick="alert('SÜREÇ TARİHÇESİ:\\n\\n${historyLogs}')">Log</button>`;
+                
+                actionButtons += historyButton;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong class="text-dark">${globalTemplates[inst.templateId]?.name || inst.templateId}</strong><br><small class="text-muted">ID: ${inst.id.substring(0,8)}</small></td>
+                        <td><span class="text-dark fw-medium">@${inst.initiator}</span></td>
+                        <td>
+                            <span class="status-${inst.status}">${inst.status}</span><br>
+                            <small class="text-muted">${inst.currentState.replace(/_/g, ' ')}</small>
+                        </td>
+                        <td><span class="badge rounded-pill bg-secondary bg-opacity-10 text-dark border">${requiredRole}</span></td>
+                        <td class="text-end">${actionButtons}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function startProcess() {
+            const templateId = document.getElementById('templateSelect').value;
+            if(!templateId) return;
+
+            await fetch(`${API_URL}/instances/start?templateId=${templateId}&initiator=${currentUsername}`, { method: 'POST' });
+            fetchInstances(); 
+        }
+
+        async function completeTask(instanceId, transition) {
+            const completedBy = `${currentUsername} (${currentRole})`;
+            await fetch(`${API_URL}/instances/${instanceId}/complete?transition=${transition}&completedBy=${completedBy}`, { method: 'POST' });
+            fetchInstances(); 
+        }
+    </script>
+</body>
+</html>

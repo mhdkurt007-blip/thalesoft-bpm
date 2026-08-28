@@ -1,0 +1,6 @@
+spring:
+  mongodb:
+    uri: mongodb+srv://mhdkurt007_db_user:BdZrn6uQzUruBVa6@cluster0.vhidb34.mongodb.net/thalesoft_bpm?retryWrites=true&w=majority&appName=Cluster0
+
+server:
+  port: 8080
