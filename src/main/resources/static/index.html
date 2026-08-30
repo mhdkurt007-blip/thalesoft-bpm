@@ -235,7 +235,9 @@
                         </div>
                         <div class="card-body px-4">
                             <!-- Süreç Tasarla Butonu -->
-<button class="btn btn-success mb-4 w-100" onclick="openDesignerModal()">✨ Yeni Süreç Tasarla (Stüdyo)</button>
+    <button type="button" class="btn btn-success mb-4 w-100" data-bs-toggle="modal" data-bs-target="#designerModal" data-toggle="modal" data-target="#designerModal">
+Yeni Süreç Tasarla (Stüdyo)
+</button>
 
 <!-- Tasarım Stüdyosu Modalı (Gizli Ekran) -->
 <div class="modal fade" id="designerModal" tabindex="-1">
@@ -421,9 +423,7 @@
             fetchInstances(); 
         }
 
-        function openDesignerModal() {
-    new bootstrap.Modal(document.getElementById('designerModal')).show();
-}
+  
 
 function submitNewTemplate() {
     const templateId = document.getElementById('d_templateId').value.toUpperCase();
