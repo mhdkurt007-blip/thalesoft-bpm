@@ -14,6 +14,15 @@ public class ProcessTemplate {
     private String templateId; // Örn: LEAVE_REQUEST_V1
     private String name;
     private String initialState;
+    private String status = "DRAFT";
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
     
     // Key: State adı (Örn: MANAGER_APPROVAL), Value: O state'in detayları
     private Map<String, StateDefinition> states; 

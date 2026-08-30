@@ -31,7 +31,9 @@ public class ProcessController {
     // --- ARAYÜZDE LİSTELEME YAPMAK İÇİN (GET) ---
     @GetMapping("/templates")
     public ResponseEntity<List<ProcessTemplate>> getAllTemplates() {
-        return ResponseEntity.ok(templateRepo.findAll());
+        // HATA BURADA DÜZELTİLDİ: Sınıf adı yerine "templateRepo" objesini kullandık
+        // Artık sadece ACTIVE (onaylanmış) süreçler arayüzde görünecek.
+        return ResponseEntity.ok(templateRepo.findByStatus("ACTIVE"));
     }
 
     @GetMapping("/instances")
@@ -39,10 +41,29 @@ public class ProcessController {
         return ResponseEntity.ok(instanceRepo.findAll());
     }
 
-    // --- SÜREÇ YÖNETİMİ İÇİN (POST) ---
+    // --- SÜREÇ YÖNETİMİ İÇİN (POST) - META PROCESS EKLENDİ ---
     @PostMapping("/templates")
     public ResponseEntity<ProcessTemplate> createTemplate(@RequestBody ProcessTemplate template) {
-        return ResponseEntity.ok(templateRepo.save(template));
+        // 1. Yeni gelen süreci güvenlik amacıyla zorla DRAFT (Taslak) statüsüne çekiyoruz
+        template.setStatus("DRAFT");
+        ProcessTemplate savedTemplate = templateRepo.save(template);
+
+        // 2. Hocanın vizyonu: "Sürecin Süreci" (Meta-Process) burada tetikleniyor!
+        try {
+            // Sisteme yeni bir süreç eklendiğinde, motor kendi onay akışını (TEMPLATE_APPROVAL_V1) başlatır.
+            engineService.startProcess("TEMPLATE_APPROVAL_V1", "SYSTEM", 
+                Map.of(
+                    "targetTemplateId", savedTemplate.getTemplateId(),
+                    "targetTemplateName", savedTemplate.getName()
+                )
+            );
+        } catch (Exception e) {
+            // Eğer sistemde henüz TEMPLATE_APPROVAL_V1 adında bir süreç yoksa uygulama çökmesin,
+            // sadece konsola uyarı yazsın. 
+            System.out.println("Meta-Process (Şablon Onay Süreci) tetiklenemedi: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(savedTemplate);
     }
 
     @PostMapping("/instances/start")
