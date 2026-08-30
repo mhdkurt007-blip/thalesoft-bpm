@@ -234,6 +234,43 @@
                             Yeni Talep
                         </div>
                         <div class="card-body px-4">
+                            <!-- Süreç Tasarla Butonu -->
+<button class="btn btn-success mb-4 w-100" onclick="openDesignerModal()">✨ Yeni Süreç Tasarla (Stüdyo)</button>
+
+<!-- Tasarım Stüdyosu Modalı (Gizli Ekran) -->
+<div class="modal fade" id="designerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Süreç Tasarım Stüdyosu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="designerForm">
+          <div class="mb-3">
+            <label>Süreç Kodu (Örn: YEMEK_TALEBI_V1)</label>
+            <input type="text" id="d_templateId" class="form-control" placeholder="Aralarında alt tire kullanın" required>
+          </div>
+          <div class="mb-3">
+            <label>Süreç Adı (Örn: Yemek Kartı Talebi)</label>
+            <input type="text" id="d_name" class="form-control" required>
+          </div>
+          <div class="alert alert-info" style="font-size: 13px;">
+            <strong>Otomatik Şablon:</strong> Bu stüdyo, talebin belirlediğiniz rolden onay alıp sonuçlandığı akıllı bir JSON üretir.
+          </div>
+          <div class="mb-3">
+            <label>Onaylayacak Rol (Örn: HR, MANAGER, IT)</label>
+            <input type="text" id="d_role" class="form-control" placeholder="Büyük harflerle yazın" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" onclick="submitNewTemplate()">Taslağı Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
                             <div class="mb-4">
                                 <label class="form-label text-muted small fw-bold">İş Akışı Şablonu</label>
                                 <select id="templateSelect" class="form-select"></select>
@@ -383,6 +420,52 @@
             await fetch(`${API_URL}/instances/${instanceId}/complete?transition=${transition}&completedBy=${completedBy}`, { method: 'POST' });
             fetchInstances(); 
         }
+
+        function openDesignerModal() {
+    new bootstrap.Modal(document.getElementById('designerModal')).show();
+}
+
+function submitNewTemplate() {
+    const templateId = document.getElementById('d_templateId').value.toUpperCase();
+    const name = document.getElementById('d_name').value;
+    const role = document.getElementById('d_role').value.toUpperCase();
+
+    if(!templateId || !name || !role) {
+        return alert("Lütfen tüm alanları doldurun!");
+    }
+
+    // Kullanıcının girdiği bilgilere göre hatasız JSON üretiliyor
+    const processJson = {
+        templateId: templateId,
+        name: name,
+        initialState: "FIRST_APPROVAL",
+        states: {
+            "FIRST_APPROVAL": {
+                type: "USER_TASK",
+                assigneeRole: role,
+                transitions: { 
+                    "APPROVE": "COMPLETED", 
+                    "REJECT": "REJECTED" 
+                }
+            },
+            "COMPLETED": { type: "END_EVENT" },
+            "REJECTED": { type: "END_EVENT" }
+        }
+    };
+
+    // Senin mevcut API url'ine gönderiyoruz (Render'da çalışsın diye dinamik yapabilirsin)
+    fetch('/api/bpm/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(processJson)
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert("Süreç taslağı başarıyla oluşturuldu! Yönetici (MANAGER) onayladığında listeye eklenecektir.");
+        location.reload(); 
+    })
+    .catch(err => alert("Süreç gönderilirken hata oluştu."));
+}
     </script>
 </body>
 </html>
