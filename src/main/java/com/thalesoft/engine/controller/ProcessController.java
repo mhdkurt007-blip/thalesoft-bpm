@@ -8,6 +8,7 @@ import com.thalesoft.engine.service.BpmEngineService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,6 @@ public class ProcessController {
     // --- ARAYÜZDE LİSTELEME YAPMAK İÇİN (GET) ---
     @GetMapping("/templates")
     public ResponseEntity<List<ProcessTemplate>> getAllTemplates() {
-        // HATA BURADA DÜZELTİLDİ: Sınıf adı yerine "templateRepo" objesini kullandık
         // Artık sadece ACTIVE (onaylanmış) süreçler arayüzde görünecek.
         return ResponseEntity.ok(templateRepo.findByStatus("ACTIVE"));
     }
@@ -41,7 +41,7 @@ public class ProcessController {
         return ResponseEntity.ok(instanceRepo.findAll());
     }
 
-    // --- SÜREÇ YÖNETİMİ İÇİN (POST) - META PROCESS EKLENDİ ---
+    // --- SÜREÇ YÖNETİMİ İÇİN (POST) - META PROCESS ---
     @PostMapping("/templates")
     public ResponseEntity<ProcessTemplate> createTemplate(@RequestBody ProcessTemplate template) {
         // 1. Yeni gelen süreci güvenlik amacıyla zorla DRAFT (Taslak) statüsüne çekiyoruz
@@ -50,17 +50,19 @@ public class ProcessController {
 
         // 2. Hocanın vizyonu: "Sürecin Süreci" (Meta-Process) burada tetikleniyor!
         try {
-            // Sisteme yeni bir süreç eklendiğinde, motor kendi onay akışını (TEMPLATE_APPROVAL_V1) başlatır.
-            engineService.startProcess("TEMPLATE_APPROVAL_V1", "SYSTEM", 
-                Map.of(
-                    "targetTemplateId", savedTemplate.getTemplateId(),
-                    "targetTemplateName", savedTemplate.getName()
-                )
-            );
+            // Null hatalarına karşı kurşun geçirmez HashMap yapısı
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("targetTemplateId", savedTemplate.getTemplateId());
+            variables.put("targetTemplateName", savedTemplate.getName());
+
+            // Sisteme yeni bir süreç eklendiğinde, motor kendi onay akışını başlatır.
+            engineService.startProcess("TEMPLATE_APPROVAL_V1", "SYSTEM", variables);
+            
+            System.out.println("Meta-Process Başarıyla Tetiklendi! Bekleyen Süreç: " + savedTemplate.getTemplateId());
         } catch (Exception e) {
-            // Eğer sistemde henüz TEMPLATE_APPROVAL_V1 adında bir süreç yoksa uygulama çökmesin,
-            // sadece konsola uyarı yazsın. 
-            System.out.println("Meta-Process (Şablon Onay Süreci) tetiklenemedi: " + e.getMessage());
+            // Hata artık sessizce yutulmayacak, terminalde kırmızıyla tüm detaylarıyla bağıracak!
+            System.err.println("DİKKAT! Meta-Process (Şablon Onay Süreci) tetiklenirken hata oluştu!");
+            e.printStackTrace(); 
         }
 
         return ResponseEntity.ok(savedTemplate);
@@ -72,7 +74,7 @@ public class ProcessController {
             @RequestParam String initiator, 
             @RequestBody(required = false) Map<String, Object> variables) {
         
-        if (variables == null) variables = Map.of();
+        if (variables == null) variables = new HashMap<>();
         return ResponseEntity.ok(engineService.startProcess(templateId, initiator, variables));
     }
 

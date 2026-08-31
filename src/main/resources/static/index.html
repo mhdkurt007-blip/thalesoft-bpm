@@ -190,14 +190,14 @@
             
             <div class="text-start mb-3">
                 <label class="form-label text-muted small fw-bold">Giriş Yapılacak Rol</label>
-                <select id="loginRole" class="form-select">
-                    <option value="EMPLOYEE">Standart Çalışan</option>
-                    <option value="MANAGER">Yönetici (Manager)</option>
-                    <option value="IT_SPECIALIST">IT Uzmanı</option>
-                    <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
-                    <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
-                    <option value="HR_SPECIALIST">İnsan Kaynakları</option>
-                </select>
+                 <select id="loginRole" class="form-select">
+                   <option value="EMPLOYEE">Standart Çalışan</option>
+                   <option value="MANAGER">Yönetici (Manager)</option>
+                   <option value="IT">IT Uzmanı</option>
+                   <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
+                   <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
+                   <option value="HR">İnsan Kaynakları</option>
+                 </select>
             </div>
             <div class="text-start mb-3">
                 <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
@@ -429,46 +429,57 @@
         }
 
         function submitNewTemplate() {
-            const templateId = document.getElementById('d_templateId').value.toUpperCase();
-            const name = document.getElementById('d_name').value;
-            const role = document.getElementById('d_role').value.toUpperCase();
+    const templateId = document.getElementById('d_templateId').value.toUpperCase().trim();
+    const name = document.getElementById('d_name').value.trim();
+    // Rolleri alıyoruz (Örn: "MANAGER, HR, IT")
+    const rawRoles = document.getElementById('d_role').value.toUpperCase();
 
-            if(!templateId || !name || !role) {
-                return alert("Lütfen tüm alanları doldurun!");
+    if(!templateId || !name || !rawRoles) {
+        return alert("Lütfen tüm alanları doldurun!");
+    }
+
+    // Virgülle ayrılmış metni temiz bir Diziye (Array) çeviriyoruz
+    const roles = rawRoles.split(',').map(r => r.trim()).filter(r => r.length > 0);
+    const states = {};
+
+    // Kaç tane rol yazıldıysa o kadar adımı zincirleme birbirine bağlıyoruz!
+    for (let i = 0; i < roles.length; i++) {
+        const stepName = "ONAY_ADIMI_" + (i + 1);
+        const nextStepName = (i === roles.length - 1) ? "COMPLETED" : "ONAY_ADIMI_" + (i + 2);
+        
+        states[stepName] = {
+            type: "USER_TASK",
+            assigneeRole: roles[i],
+            transitions: { 
+                "APPROVE": nextStepName, 
+                "REJECT": "REJECTED" 
             }
+        };
+    }
+    
+    // Bitiş durumlarını ekliyoruz
+    states["COMPLETED"] = { type: "END_EVENT" };
+    states["REJECTED"] = { type: "END_EVENT" };
 
-            // Kullanıcının girdiği bilgilere göre hatasız JSON üretiliyor
-            const processJson = {
-                templateId: templateId,
-                name: name,
-                initialState: "FIRST_APPROVAL",
-                states: {
-                    "FIRST_APPROVAL": {
-                        type: "USER_TASK",
-                        assigneeRole: role,
-                        transitions: { 
-                            "APPROVE": "COMPLETED", 
-                            "REJECT": "REJECTED" 
-                        }
-                    },
-                    "COMPLETED": { type: "END_EVENT" },
-                    "REJECTED": { type: "END_EVENT" }
-                }
-            };
+    const processJson = {
+        templateId: templateId,
+        name: name,
+        initialState: "ONAY_ADIMI_1",
+        states: states
+    };
 
-            // Senin mevcut API url'ine gönderiyoruz (Render'da çalışsın diye dinamik yapabilirsin)
-            fetch(API_URL + '/templates', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(processJson)
-            })
-            .then(r => r.json())
-            .then(data => {
-                alert("Süreç taslağı başarıyla oluşturuldu! Yönetici (MANAGER) onayladığında listeye eklenecektir.");
-                location.reload(); 
-            })
-            .catch(err => alert("Süreç gönderilirken hata oluştu."));
-        }
+    fetch(API_URL + '/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(processJson)
+    })
+    .then(r => r.json())
+    .then(data => {
+        alert("Süreç başarıyla oluşturuldu! Yönetici onayladığında listeye eklenecektir.");
+        location.reload(); 
+    })
+    .catch(err => alert("Süreç gönderilirken hata oluştu."));
+}
     </script>
 </body>
 </html>
