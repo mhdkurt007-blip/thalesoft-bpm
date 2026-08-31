@@ -177,6 +177,57 @@
         }
         
         #dashboardScreen { display: none; animation: scaleUp 0.4s ease forwards; }
+
+        /* --- BLUEPRINT STÜDYOSU (Apple Light Tema Uyumu) --- */
+        .blueprint-canvas {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding: 20px 10px;
+            background-color: #fafafa;
+            border-radius: 12px;
+            border: 1px solid var(--apple-border);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .blueprint-node {
+            background: var(--apple-surface);
+            border: 2px solid var(--apple-border);
+            border-radius: 12px;
+            padding: 12px;
+            min-width: 140px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+            flex-shrink: 0;
+            text-align: center;
+        }
+        .blueprint-node.start-node { border-color: #34C759; background-color: rgba(52, 199, 89, 0.05); } 
+        .blueprint-node.end-node { border-color: #FF3B30; background-color: rgba(255, 59, 48, 0.05); } 
+        .blueprint-node.task-node { border-color: var(--apple-blue); } 
+        
+        .blueprint-arrow {
+            color: var(--apple-muted);
+            font-size: 20px;
+            margin: 0 10px;
+            flex-shrink: 0;
+        }
+        .node-input {
+            background: rgba(0,0,0,0.04);
+            border: 1px solid transparent;
+            color: var(--apple-text);
+            border-radius: 6px;
+            width: 100%;
+            margin-top: 8px;
+            padding: 6px;
+            font-size: 13px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .node-input:focus {
+            background: var(--apple-surface);
+            border-color: var(--apple-blue);
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -201,7 +252,6 @@
             </div>
             <div class="text-start mb-3">
                 <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
-                <!-- İstediğin Serbest Metin Girişi -->
                 <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz" />
             </div>
             <div class="text-start mb-4">
@@ -236,7 +286,7 @@
                         <div class="card-body px-4">
                             <!-- Süreç Tasarla Butonu -->
                             <button type="button" class="btn btn-success mb-4 w-100" data-bs-toggle="modal" data-bs-target="#designerModal" data-toggle="modal" data-target="#designerModal">
-                            Yeni Süreç Tasarla (Stüdyo)
+                            ✨ Yeni Süreç Tasarla (Stüdyo)
                             </button>
 
                             <div class="mb-4">
@@ -282,42 +332,71 @@
         </div>
     </div>
 
-    <!-- 3. TASARIM STÜDYOSU MODALI (Düzeltildi ve buraya taşındı) -->
+    <!-- 3. TASARIM STÜDYOSU MODALI (Blueprint Entegreli) -->
     <div class="modal fade" id="designerModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg"> <!-- modal-lg eklendi, canvas rahat sığsın diye -->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Süreç Tasarım Stüdyosu</h5>
+                    <h5 class="modal-title fw-bold">Süreç Tasarım Stüdyosu (Blueprint)</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="designerForm">
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Süreç Kodu (Örn: YEMEK_TALEBI_V1)</label>
-                            <input type="text" id="d_templateId" class="form-control" placeholder="Aralarında alt tire kullanın" required />
+                        <div class="d-flex gap-3 mb-3">
+                            <div class="w-50">
+                                <label class="form-label text-muted small fw-bold">Süreç Kodu (Örn: MASRAF_V1)</label>
+                                <input type="text" id="d_templateId" class="form-control" required />
+                            </div>
+                            <div class="w-50">
+                                <label class="form-label text-muted small fw-bold">Süreç Adı (Örn: Masraf Beyanı)</label>
+                                <input type="text" id="d_name" class="form-control" required />
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Süreç Adı (Örn: Yemek Kartı Talebi)</label>
-                            <input type="text" id="d_name" class="form-control" required />
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
+                            <label class="form-label text-muted small fw-bold m-0">İş Akışı (Event Graph)</label>
+                            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="addBlueprintNode()">➕ Yeni Onay Adımı Ekle</button>
                         </div>
-                        <div class="alert alert-info py-2" style="font-size: 13px;">
-                            <strong>Otomatik Şablon:</strong> Bu stüdyo, talebin belirlediğiniz rolden onay alıp sonuçlandığı akıllı bir JSON üretir.
+
+                        <!-- Blueprint Canvas (Sürükle bırak / Node mantığındaki görsel alan) -->
+                        <div class="blueprint-canvas" id="blueprintCanvas">
+                            <!-- Start Node -->
+                            <div class="blueprint-node start-node d-flex align-items-center justify-content-center">
+                                <small class="text-success fw-bold">BAŞLAT</small>
+                            </div>
+                            
+                            <div class="blueprint-arrow">➔</div>
+                            
+                            <!-- Dinamik Node'lar Buraya Eklenecek -->
+                            <div class="d-flex align-items-center" id="dynamicNodes">
+                                <!-- Varsayılan İlk Adım -->
+                                <div class="blueprint-node task-node d-flex flex-column align-items-center">
+                                    <small class="text-primary fw-bold mb-1">USER TASK</small>
+                                    <input type="text" class="node-input role-input" placeholder="Rol (Örn: MANAGER)">
+                                </div>
+                            </div>
+                            
+                            <!-- End Node -->
+                            <div class="blueprint-arrow ms-2">➔</div>
+                            <div class="blueprint-node end-node d-flex align-items-center justify-content-center">
+                                <small class="text-danger fw-bold">BİTİŞ</small>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Onaylayacak Rol (Örn: HR, MANAGER, IT)</label>
-                            <input type="text" id="d_role" class="form-control" placeholder="Büyük harflerle yazın" required />
+                        
+                        <div class="alert alert-info py-2 mt-3 mb-0" style="font-size: 13px;">
+                            <strong>Bilgi:</strong> Oklar sürecin akış yönünü gösterir. Eklenen kutucuklar birer onay makamıdır. Rolleri büyük harfle yazınız (Örn: IT, HR).
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="button" class="btn btn-primary" onclick="submitNewTemplate()">Taslağı Gönder</button>
+                    <button type="button" class="btn btn-primary" onclick="submitNewTemplate()">Blueprint'i Derle ve Gönder</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Motoru (Önce bu yüklenmeli) -->
+    <!-- Bootstrap JS Motoru -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Senin JS Kodların -->
@@ -327,7 +406,6 @@
         let currentRole = '';
         let currentUsername = '';
 
-        /* MANTIKSAL HİÇBİR ŞEY DEĞİŞMEDİ */
         function performLogin() {
             const role = document.getElementById('loginRole').value;
             const user = document.getElementById('loginUsername').value;
@@ -369,6 +447,7 @@
             
             templates.forEach(t => {
                 globalTemplates[t.templateId] = t; 
+                // Sistem onay sürecini gizleme kuralı başarıyla çalışıyor:
                 if (t.templateId !== 'TEMPLATE_APPROVAL_V1') {
                     select.innerHTML += `<option value="${t.templateId}">${t.name}</option>`;
                 }
@@ -389,15 +468,14 @@
                     requiredRole = globalTemplates[inst.templateId].states[inst.currentState].assigneeRole;
 
                     if (currentRole === requiredRole) {
-                        // Onayla butonu Apple tarzı Mavi renk (btn-success sınıfı css'de maviye ayarlandı)
                         actionButtons = `<button class="btn btn-success me-2" onclick="completeTask('${inst.id}', 'APPROVE')">Onayla</button>`;
                     } else {
                         actionButtons = `<span class="badge rounded-pill bg-light text-muted border py-2 px-3 me-2">Yetki Bekleniyor</span>`;
                     }
                 }
 
-                const historyLogs = inst.auditLogs ? inst.auditLogs.join('\\n') : 'Kayıt yok.';
-                const historyButton = `<button class="btn btn-info" onclick="alert('SÜREÇ TARİHÇESİ:\\n\\n${historyLogs}')">Log</button>`;
+                const historyLogs = inst.auditLogs ? inst.auditLogs.join('\n') : 'Kayıt yok.';
+                const historyButton = `<button class="btn btn-info" onclick="alert('SÜREÇ TARİHÇESİ:\n\n${historyLogs}')">Log</button>`;
                 
                 actionButtons += historyButton;
 
@@ -430,58 +508,83 @@
             fetchInstances(); 
         }
 
+        // --- BLUEPRINT NODE EKLEME FONKSİYONU ---
+        function addBlueprintNode() {
+            const container = document.getElementById('dynamicNodes');
+            
+            // Ok (Arrow)
+            const arrow = document.createElement('div');
+            arrow.className = 'blueprint-arrow';
+            arrow.innerText = '➔';
+            
+            // Düğüm (Node)
+            const node = document.createElement('div');
+            node.className = 'blueprint-node task-node d-flex flex-column align-items-center';
+            node.innerHTML = `
+                <small class="text-primary fw-bold mb-1">USER TASK</small>
+                <input type="text" class="node-input role-input" placeholder="Rol (Örn: IT)">
+                <button type="button" class="btn btn-sm btn-danger mt-2 w-100 py-0" style="border-radius: 4px; font-size:11px;" onclick="this.parentElement.previousElementSibling.remove(); this.parentElement.remove();">SİL</button>
+            `;
+            
+            container.appendChild(arrow);
+            container.appendChild(node);
+        }
+
+        // --- BLUEPRINT DERLEME VE GÖNDERME FONKSİYONU ---
         function submitNewTemplate() {
-    const templateId = document.getElementById('d_templateId').value.toUpperCase().trim();
-    const name = document.getElementById('d_name').value.trim();
-    // Rolleri alıyoruz (Örn: "MANAGER, HR, IT")
-    const rawRoles = document.getElementById('d_role').value.toUpperCase();
+            const templateId = document.getElementById('d_templateId').value.toUpperCase().trim();
+            const name = document.getElementById('d_name').value.trim();
+            
+            // Ekrandaki tüm inputları sırasıyla topluyoruz
+            const roleInputs = document.querySelectorAll('.role-input');
+            let roles = [];
+            roleInputs.forEach(input => {
+                if(input.value.trim() !== '') roles.push(input.value.toUpperCase().trim());
+            });
 
-    if(!templateId || !name || !rawRoles) {
-        return alert("Lütfen tüm alanları doldurun!");
-    }
-
-    // Virgülle ayrılmış metni temiz bir Diziye (Array) çeviriyoruz
-    const roles = rawRoles.split(',').map(r => r.trim()).filter(r => r.length > 0);
-    const states = {};
-
-    // Kaç tane rol yazıldıysa o kadar adımı zincirleme birbirine bağlıyoruz!
-    for (let i = 0; i < roles.length; i++) {
-        const stepName = "ONAY_ADIMI_" + (i + 1);
-        const nextStepName = (i === roles.length - 1) ? "COMPLETED" : "ONAY_ADIMI_" + (i + 2);
-        
-        states[stepName] = {
-            type: "USER_TASK",
-            assigneeRole: roles[i],
-            transitions: { 
-                "APPROVE": nextStepName, 
-                "REJECT": "REJECTED" 
+            if(!templateId || !name || roles.length === 0) {
+                return alert("Lütfen kod ve isim alanlarını doldurup, en az 1 onay adımı eklediğinizden emin olun!");
             }
-        };
-    }
-    
-    // Bitiş durumlarını ekliyoruz
-    states["COMPLETED"] = { type: "END_EVENT" };
-    states["REJECTED"] = { type: "END_EVENT" };
 
-    const processJson = {
-        templateId: templateId,
-        name: name,
-        initialState: "ONAY_ADIMI_1",
-        states: states
-    };
+            const states = {};
+            // Her Node'u birbirine Pinliyoruz (Geçişleri sırayla bağlıyoruz)
+            for (let i = 0; i < roles.length; i++) {
+                const stepName = "STEP_" + (i + 1);
+                const nextStepName = (i === roles.length - 1) ? "COMPLETED" : "STEP_" + (i + 2);
+                
+                states[stepName] = {
+                    type: "USER_TASK",
+                    assigneeRole: roles[i],
+                    transitions: { 
+                        "APPROVE": nextStepName, 
+                        "REJECT": "REJECTED" 
+                    }
+                };
+            }
+            
+            // Bitiş durumlarını ekliyoruz
+            states["COMPLETED"] = { type: "END_EVENT" };
+            states["REJECTED"] = { type: "END_EVENT" };
 
-    fetch(API_URL + '/templates', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(processJson)
-    })
-    .then(r => r.json())
-    .then(data => {
-        alert("Süreç başarıyla oluşturuldu! Yönetici onayladığında listeye eklenecektir.");
-        location.reload(); 
-    })
-    .catch(err => alert("Süreç gönderilirken hata oluştu."));
-}
+            const processJson = {
+                templateId: templateId,
+                name: name,
+                initialState: "STEP_1",
+                states: states
+            };
+
+            fetch(API_URL + '/templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(processJson)
+            })
+            .then(r => r.json())
+            .then(data => {
+                alert("Blueprint başarıyla derlendi! Yönetici onayladığında açılır listeye eklenecektir.");
+                location.reload(); 
+            })
+            .catch(err => alert("Blueprint gönderilirken hata oluştu. Sunucu bağlantınızı kontrol edin."));
+        }
     </script>
 </body>
 </html>
