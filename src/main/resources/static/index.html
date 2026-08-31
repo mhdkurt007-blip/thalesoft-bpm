@@ -369,7 +369,9 @@
             
             templates.forEach(t => {
                 globalTemplates[t.templateId] = t; 
-                select.innerHTML += `<option value="${t.templateId}">${t.name}</option>`;
+                if (t.templateId !== 'TEMPLATE_APPROVAL_V1') {
+                    select.innerHTML += `<option value="${t.templateId}">${t.name}</option>`;
+                }
             });
         }
 
