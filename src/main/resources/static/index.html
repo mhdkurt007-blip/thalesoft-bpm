@@ -5,23 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thalesoft Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    
     <style>
         :root {
+            /* Apple Renk Paleti */
             --apple-bg: #F5F5F7;
             --apple-surface: #FFFFFF;
             --apple-text: #1D1D1F;
             --apple-muted: #86868B;
             --apple-blue: #0071E3;
             --apple-blue-hover: #0077ED;
-            --apple-green: #34C759;
             --apple-border: rgba(0, 0, 0, 0.08);
             --apple-radius: 18px;
         }
 
-        * { box-sizing: border-box; }
-
         body {
+            /* Apple cihazlarda SF Pro, diğerlerinde en temiz sistem fontunu çeker */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--apple-bg);
             color: var(--apple-text);
@@ -29,20 +28,23 @@
             letter-spacing: -0.01em;
             min-height: 100vh;
             margin: 0;
+            display: flex;
+            flex-direction: column;
         }
 
+        /* --- ANİMASYON --- */
         @keyframes scaleUp {
             from { opacity: 0; transform: scale(0.97); }
             to { opacity: 1; transform: scale(1); }
         }
 
+        /* --- KART TASARIMLARI (Minimal ve Yuvarlak) --- */
         .card {
             background: var(--apple-surface);
             border: 1px solid var(--apple-border);
             border-radius: var(--apple-radius);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02); /* Çok hafif derinlik */
         }
-
         .card-header {
             background: transparent;
             border-bottom: 1px solid var(--apple-border);
@@ -51,9 +53,9 @@
             font-size: 1.15rem;
             color: var(--apple-text);
         }
-
         .card-body { padding: 1.5rem; }
 
+        /* --- BUTONLAR (Hap Şeklinde - Capsule) --- */
         .btn {
             border-radius: 20px;
             font-weight: 500;
@@ -63,49 +65,30 @@
             border: none;
             box-shadow: none !important;
         }
-
-        .btn-primary {
-            background: var(--apple-text);
-            color: #fff;
+        .btn-primary { 
+            background: var(--apple-text); /* Apple tarzı stark black ana buton */
+            color: white; 
         }
-
-        .btn-primary:hover {
-            background: #333336;
-            color: #fff;
-            transform: scale(1.02);
+        .btn-primary:hover { 
+            background: #333336; 
+            transform: scale(1.02); 
         }
-
-        .btn-success {
-            background: var(--apple-blue);
-            color: #fff;
+        .btn-success { 
+            background: var(--apple-blue); /* Onay butonu Apple Mavisi */
+            color: white; 
         }
-
-        .btn-success:hover {
-            background: var(--apple-blue-hover);
-            color: #fff;
+        .btn-success:hover { 
+            background: var(--apple-blue-hover); 
         }
-
-        .btn-info {
-            background: #E8E8ED;
-            color: var(--apple-text);
+        .btn-info { 
+            background: #E8E8ED; 
+            color: var(--apple-text); 
         }
-
-        .btn-info:hover {
-            background: #D1D1D6;
-            color: var(--apple-text);
+        .btn-info:hover { 
+            background: #D1D1D6; 
         }
-
-        .btn-outline-secondary {
-            border: 1px solid rgba(0,0,0,0.12);
-            color: var(--apple-text);
-            background: transparent;
-        }
-
-        .btn-outline-secondary:hover {
-            background: #E8E8ED;
-            color: var(--apple-text);
-        }
-
+        
+        /* --- FORM ELEMANLARI (iOS Tarzı Inputlar) --- */
         .form-control, .form-select {
             background-color: rgba(0, 0, 0, 0.04);
             border: 2px solid transparent;
@@ -116,76 +99,49 @@
             transition: all 0.2s ease;
             color: var(--apple-text);
         }
-
         .form-control:focus, .form-select:focus {
             background-color: var(--apple-surface);
             border-color: var(--apple-blue);
             box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
         }
 
-        .table {
-            --bs-table-bg: transparent;
-            margin-bottom: 0;
+        /* --- TABLO --- */
+        .table { --bs-table-bg: transparent; margin-bottom: 0; }
+        .table th { 
+            border-bottom: 1px solid var(--apple-border); 
+            color: var(--apple-muted); 
+            font-weight: 500; 
+            font-size: 0.85rem; 
+            padding: 1rem 0.5rem; 
         }
-
-        .table th {
-            border-bottom: 1px solid var(--apple-border);
-            color: var(--apple-muted);
-            font-weight: 500;
-            font-size: 0.85rem;
-            padding: 1rem 0.5rem;
-        }
-
-        .table td {
-            padding: 1.2rem 0.5rem;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--apple-border);
+        .table td { 
+            padding: 1.2rem 0.5rem; 
+            vertical-align: middle; 
+            border-bottom: 1px solid var(--apple-border); 
             font-size: 0.95rem;
         }
 
-        .table tbody tr:last-child td { border-bottom: 0; }
-
-        .badge {
-            padding: 0.5em 0.8em;
-            font-weight: 500;
-            font-size: 0.75rem;
+        /* --- DURUM GÖSTERGELERİ --- */
+        .badge { 
+            padding: 0.5em 0.8em; 
+            font-weight: 500; 
+            font-size: 0.75rem; 
             letter-spacing: 0.5px;
         }
+        .status-ACTIVE { color: var(--apple-blue); font-weight: 600; }
+        .status-COMPLETED { color: #34C759; font-weight: 600; } /* Apple Yeşili */
 
-        .status-ACTIVE {
-            color: var(--apple-blue);
-            font-weight: 600;
-        }
-
-        .status-COMPLETED {
-            color: var(--apple-green);
-            font-weight: 600;
-        }
-
-        .status-REJECTED {
-            color: #FF3B30;
-            font-weight: 600;
-        }
-
-        .status-UNKNOWN {
-            color: var(--apple-muted);
-            font-weight: 600;
-        }
-
+        /* --- GİRİŞ EKRANI (macOS Kilit Ekranı Hissiyatı) --- */
         #loginScreenWrapper {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
+            /* Logodaki Mavi'den Yeşile Kusursuz Gradient Geçişi */
             background: linear-gradient(135deg, #10a3f9 0%, #35eb9a 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             z-index: 9999;
-            padding: 1rem;
         }
-
         .login-card {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(40px);
+            background: rgba(255, 255, 255, 0.5); /* Yarı saydam */
+            backdrop-filter: blur(40px); /* Meşhur Buzlu Cam (Glassmorphism) Efekti */
             -webkit-backdrop-filter: blur(40px);
             padding: 3rem 2.5rem;
             width: 100%;
@@ -196,18 +152,18 @@
             animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             text-align: center;
         }
-
         .mac-avatar-img {
-            width: 85px;
+            width: 85px; 
             height: auto;
             max-height: 85px;
             margin: 0 auto 1.5rem auto;
             display: block;
-            object-fit: contain;
+            object-fit: contain; 
             border-radius: 20px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.08);
         }
 
+        /* --- NAVBAR (macOS Menu Bar Hissiyatı) --- */
         .navbar-custom {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(20px);
@@ -219,75 +175,21 @@
             z-index: 1000;
             margin-bottom: 2rem;
         }
-
-        #dashboardScreen {
-            display: none;
-            animation: scaleUp 0.4s ease forwards;
-        }
-
-        .empty-state {
-            padding: 2.5rem 1rem;
-            text-align: center;
-            color: var(--apple-muted);
-        }
-
-        .designer-info {
-            background: rgba(0, 113, 227, 0.06);
-            border: 1px solid rgba(0, 113, 227, 0.1);
-            border-radius: 14px;
-            padding: 0.9rem 1rem;
-            font-size: 0.88rem;
-            color: #4c4c50;
-        }
-
-        .modal-content {
-            border: 1px solid var(--apple-border);
-            border-radius: 22px;
-            overflow: hidden;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.16);
-        }
-
-        .modal-header,
-        .modal-footer {
-            border-color: var(--apple-border);
-        }
-
-        .modal-header { padding: 1.25rem 1.5rem; }
-        .modal-body { padding: 1.5rem; }
-        .modal-footer { padding: 1rem 1.5rem; }
-
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.14em;
-        }
-
-        @media (max-width: 767.98px) {
-            .navbar-custom {
-                padding: 0.8rem 1rem;
-            }
-
-            .navbar-user-info {
-                display: none;
-            }
-
-            .login-card {
-                padding: 2.25rem 1.5rem;
-            }
-        }
+        
+        #dashboardScreen { display: none; animation: scaleUp 0.4s ease forwards; }
     </style>
 </head>
 <body>
 
-    <!-- 1. GİRİŞ EKRANI -->
+    <!-- 1. GİRİŞ (LOGIN) EKRANI -->
     <div id="loginScreenWrapper">
         <div class="login-card">
             <img src="logo.png" class="mac-avatar-img" alt="Thalesoft Logo">
             <h4 class="fw-bold mb-1">Workspace</h4>
             <p class="text-muted mb-4 small">BPM Motoru Yönetim Paneli</p>
-
+            
             <div class="text-start mb-3">
-                <label for="loginRole" class="form-label text-muted small fw-bold">Giriş Yapılacak Rol</label>
+                <label class="form-label text-muted small fw-bold">Giriş Yapılacak Rol</label>
                 <select id="loginRole" class="form-select">
                     <option value="EMPLOYEE">Standart Çalışan</option>
                     <option value="MANAGER">Yönetici (Manager)</option>
@@ -297,86 +199,66 @@
                     <option value="HR_SPECIALIST">İnsan Kaynakları</option>
                 </select>
             </div>
-
             <div class="text-start mb-3">
-                <label for="loginUsername" class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
-                <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz" autocomplete="username">
+                <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
+                <!-- İstediğin Serbest Metin Girişi -->
+                <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz" />
             </div>
-
             <div class="text-start mb-4">
-                <label for="loginPassword" class="form-label text-muted small fw-bold">Parola</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="******" autocomplete="current-password">
+                <label class="form-label text-muted small fw-bold">Parola</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="******" />
             </div>
-
-            <button id="loginButton" type="button" class="btn btn-primary w-100 py-2" onclick="performLogin()">
-                Sisteme Giriş Yap
-            </button>
+            <button class="btn btn-primary w-100 py-2" onclick="performLogin()">Sisteme Giriş Yap</button>
         </div>
     </div>
 
-    <!-- 2. ANA SİSTEM -->
+    <!-- 2. ANA SİSTEM (DASHBOARD) EKRANI -->
     <div id="dashboardScreen">
         <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
                 <span class="fw-bold fs-5" style="letter-spacing: -0.5px;">Thalesoft</span>
             </div>
-
+            
             <div class="d-flex align-items-center">
-                <span class="text-muted small me-3 navbar-user-info">
-                    Hoş geldin, <strong id="loggedInUserInfo" class="text-dark"></strong>
-                </span>
-                <button class="btn btn-info btn-sm px-3" type="button" onclick="logout()">Çıkış</button>
+                <span class="text-muted small me-3">Hoş geldin, <strong id="loggedInUserInfo" class="text-dark"></strong></span>
+                <button class="btn btn-info btn-sm px-3" onclick="logout()">Çıkış</button>
             </div>
         </nav>
 
-        <main class="container-fluid px-4 pb-5" style="max-width: 1400px;">
+        <div class="container-fluid px-4 pb-5" style="max-width: 1400px;">
             <div class="row g-4">
-
-                <!-- SÜREÇ BAŞLATMA -->
+                <!-- SÜREÇ BAŞLATMA BÖLÜMÜ -->
                 <div class="col-xl-3 col-lg-4">
                     <div class="card h-100">
                         <div class="card-header border-0 pb-0 pt-4 px-4">
                             Yeni Talep
                         </div>
                         <div class="card-body px-4">
-
-                            <button
-                                type="button"
-                                class="btn btn-success mb-4 w-100"
-                                data-bs-toggle="modal"
-                                data-bs-target="#designerModal">
-                                Yeni Süreç Tasarla (Stüdyo)
+                            <!-- Süreç Tasarla Butonu -->
+                            <button type="button" class="btn btn-success mb-4 w-100" data-bs-toggle="modal" data-bs-target="#designerModal" data-toggle="modal" data-target="#designerModal">
+                            Yeni Süreç Tasarla (Stüdyo)
                             </button>
 
                             <div class="mb-4">
-                                <label for="templateSelect" class="form-label text-muted small fw-bold">İş Akışı Şablonu</label>
+                                <label class="form-label text-muted small fw-bold">İş Akışı Şablonu</label>
                                 <select id="templateSelect" class="form-select"></select>
                             </div>
-
                             <div class="mb-4">
-                                <label for="initiatorInput" class="form-label text-muted small fw-bold">Talebi Başlatan</label>
-                                <input type="text" id="initiatorInput" class="form-control" readonly style="opacity: 0.7;">
+                                <label class="form-label text-muted small fw-bold">Talebi Başlatan</label>
+                                <input type="text" id="initiatorInput" class="form-control" readonly style="opacity: 0.7;" />
                             </div>
-
-                            <button id="startProcessButton" type="button" class="btn btn-primary w-100 mt-2" onclick="startProcess()">
-                                Süreci Başlat
-                            </button>
+                            <button class="btn btn-primary w-100 mt-2" onclick="startProcess()">Süreci Başlat</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- İŞLEM KAYITLARI -->
+                <!-- AKTİF İŞLER BÖLÜMÜ -->
                 <div class="col-xl-9 col-lg-8">
                     <div class="card h-100">
                         <div class="card-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                             <span>İşlem Kayıtları</span>
-                            <button type="button" class="btn btn-info btn-sm px-3" onclick="refreshDashboard()">
-                                Yenile
-                            </button>
                         </div>
-
                         <div class="card-body px-4">
-                            <div id="dashboardError" class="alert alert-danger d-none" role="alert"></div>
                             <div class="table-responsive">
                                 <table class="table align-middle">
                                     <thead>
@@ -397,185 +279,62 @@
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- 3. TASARIM STÜDYOSU MODALI -->
-    <div class="modal fade" id="designerModal" tabindex="-1" aria-labelledby="designerModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- 3. TASARIM STÜDYOSU MODALI (Düzeltildi ve buraya taşındı) -->
+    <div class="modal fade" id="designerModal" tabindex="-1">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <form id="designerForm" onsubmit="submitNewTemplate(event)">
-                    <div class="modal-header">
-                        <div>
-                            <h5 class="modal-title fw-bold mb-1" id="designerModalLabel">Süreç Tasarım Stüdyosu</h5>
-                            <div class="small text-muted">Yeni bir BPM iş akışı şablonu oluştur</div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                    </div>
-
-                    <div class="modal-body">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Süreç Tasarım Stüdyosu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="designerForm">
                         <div class="mb-3">
-                            <label for="d_templateId" class="form-label small fw-bold">Şablon ID</label>
-                            <input
-                                type="text"
-                                id="d_templateId"
-                                class="form-control"
-                                placeholder="Örn. LEAVE_REQUEST"
-                                maxlength="50"
-                                autocomplete="off"
-                                required>
-                            <div class="form-text">Benzersiz ve kısa bir teknik kimlik kullanın.</div>
+                            <label class="form-label text-muted small fw-bold">Süreç Kodu (Örn: YEMEK_TALEBI_V1)</label>
+                            <input type="text" id="d_templateId" class="form-control" placeholder="Aralarında alt tire kullanın" required />
                         </div>
-
                         <div class="mb-3">
-                            <label for="d_name" class="form-label small fw-bold">Süreç Adı</label>
-                            <input
-                                type="text"
-                                id="d_name"
-                                class="form-control"
-                                placeholder="Örn. İzin Talebi"
-                                maxlength="100"
-                                autocomplete="off"
-                                required>
+                            <label class="form-label text-muted small fw-bold">Süreç Adı (Örn: Yemek Kartı Talebi)</label>
+                            <input type="text" id="d_name" class="form-control" required />
                         </div>
-
+                        <div class="alert alert-info py-2" style="font-size: 13px;">
+                            <strong>Otomatik Şablon:</strong> Bu stüdyo, talebin belirlediğiniz rolden onay alıp sonuçlandığı akıllı bir JSON üretir.
+                        </div>
                         <div class="mb-3">
-                            <label for="d_role" class="form-label small fw-bold">İlk Onay Rolü</label>
-                            <select id="d_role" class="form-select" required>
-                                <option value="" selected disabled>Rol seçin</option>
-                                <option value="EMPLOYEE">EMPLOYEE - Standart Çalışan</option>
-                                <option value="MANAGER">MANAGER - Yönetici</option>
-                                <option value="IT_SPECIALIST">IT_SPECIALIST - IT Uzmanı</option>
-                                <option value="ACCOUNTANT">ACCOUNTANT - Muhasebe Uzmanı</option>
-                                <option value="SECURITY_ADMIN">SECURITY_ADMIN - Güvenlik</option>
-                                <option value="HR_SPECIALIST">HR_SPECIALIST - İnsan Kaynakları</option>
-                            </select>
+                            <label class="form-label text-muted small fw-bold">Onaylayacak Rol (Örn: HR, MANAGER, IT)</label>
+                            <input type="text" id="d_role" class="form-control" placeholder="Büyük harflerle yazın" required />
                         </div>
-
-                        <div class="designer-info">
-                            <div class="fw-bold mb-1">Oluşturulacak akış</div>
-                            <div>Başlangıç → İlk Onay → Onaylandı / Reddedildi</div>
-                            <div class="small mt-1">İlk onay adımında seçtiğiniz rol yetkili olur.</div>
-                        </div>
-
-                        <div id="designerError" class="alert alert-danger d-none mt-3 mb-0" role="alert"></div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                        <button id="designerSubmitButton" type="submit" class="btn btn-primary">
-                            Süreci Oluştur
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitNewTemplate()">Taslağı Gönder</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS Motoru (Önce bu yüklenmeli) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Senin JS Kodların -->
     <script>
         const API_URL = window.location.origin + '/api/bpm';
-        let globalTemplates = {};
+        let globalTemplates = {}; 
         let currentRole = '';
         let currentUsername = '';
 
-        function escapeHtml(value) {
-            return String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function formatState(value) {
-            return String(value ?? '-')
-                .replace(/_/g, ' ')
-                .trim() || '-';
-        }
-
-        function formatStatus(status) {
-            return String(status ?? 'UNKNOWN').toUpperCase();
-        }
-
-        function getErrorMessage(error, fallback = 'Beklenmeyen bir hata oluştu.') {
-            return error instanceof Error && error.message ? error.message : fallback;
-        }
-
-        async function parseApiResponse(response) {
-            const rawText = await response.text();
-            let data = null;
-
-            if (rawText) {
-                try {
-                    data = JSON.parse(rawText);
-                } catch (_) {
-                    data = rawText;
-                }
-            }
-
-            if (!response.ok) {
-                const serverMessage = typeof data === 'object' && data !== null
-                    ? (data.message || data.error || data.detail)
-                    : data;
-
-                throw new Error(serverMessage || `Sunucu hatası (HTTP ${response.status}).`);
-            }
-
-            return data;
-        }
-
-        async function apiFetch(url, options = {}) {
-            const response = await fetch(url, {
-                ...options,
-                headers: {
-                    ...(options.headers || {})
-                }
-            });
-
-            return parseApiResponse(response);
-        }
-
-        function showDashboardError(message) {
-            const errorBox = document.getElementById('dashboardError');
-            errorBox.textContent = message;
-            errorBox.classList.remove('d-none');
-        }
-
-        function clearDashboardError() {
-            document.getElementById('dashboardError').classList.add('d-none');
-        }
-
-        function setButtonLoading(buttonId, loading, loadingText) {
-            const button = document.getElementById(buttonId);
-            if (!button) return;
-
-            if (loading) {
-                button.dataset.originalText = button.innerHTML;
-                button.disabled = true;
-                button.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${escapeHtml(loadingText)}`;
-            } else {
-                button.disabled = false;
-                button.innerHTML = button.dataset.originalText || button.innerHTML;
-                delete button.dataset.originalText;
-            }
-        }
-
+        /* MANTIKSAL HİÇBİR ŞEY DEĞİŞMEDİ */
         function performLogin() {
             const role = document.getElementById('loginRole').value;
-            const user = document.getElementById('loginUsername').value.trim();
+            const user = document.getElementById('loginUsername').value;
             const pass = document.getElementById('loginPassword').value;
 
-            if (!user) {
-                alert('Lütfen kullanıcı adı giriniz!');
-                document.getElementById('loginUsername').focus();
-                return;
-            }
-
-            if (pass !== '1234') {
-                alert('Hatalı şifre! (1234 giriniz)');
-                document.getElementById('loginPassword').focus();
-                return;
-            }
+            if (!user) return alert("Lütfen kullanıcı adı giriniz!");
+            if (pass !== "1234") return alert("Hatalı şifre! (1234 giriniz)");
 
             currentRole = role;
             currentUsername = user;
@@ -583,322 +342,133 @@
             document.getElementById('loginScreenWrapper').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'block';
 
-            document.getElementById('loggedInUserInfo').textContent = `${user} (${role})`;
+            document.getElementById('loggedInUserInfo').innerText = `${user} (${role})`;
             document.getElementById('initiatorInput').value = user;
 
             loadDashboardData();
         }
 
         function logout() {
-            currentRole = '';
-            currentUsername = '';
-            globalTemplates = {};
-
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loggedInUserInfo').textContent = '';
-            document.getElementById('initiatorInput').value = '';
-            document.getElementById('instancesTableBody').innerHTML = '';
-            document.getElementById('templateSelect').innerHTML = '';
-            clearDashboardError();
-
+            currentRole = ''; currentUsername = '';
+            document.getElementById('loginUsername').value = ''; 
+            document.getElementById('loginPassword').value = ''; 
             document.getElementById('loginScreenWrapper').style.display = 'flex';
             document.getElementById('dashboardScreen').style.display = 'none';
         }
 
         async function loadDashboardData() {
-            clearDashboardError();
-
-            try {
-                await fetchTemplates();
-                await fetchInstances();
-            } catch (error) {
-                showDashboardError(`Veriler yüklenemedi: ${getErrorMessage(error)}`);
-            }
-        }
-
-        async function refreshDashboard() {
-            await loadDashboardData();
+            await fetchTemplates();
+            await fetchInstances();
         }
 
         async function fetchTemplates() {
-            const data = await apiFetch(`${API_URL}/templates`);
-            const templates = Array.isArray(data) ? data : [];
+            const res = await fetch(`${API_URL}/templates`);
+            const templates = await res.json();
             const select = document.getElementById('templateSelect');
-
-            globalTemplates = {};
             select.innerHTML = '';
-
-            if (templates.length === 0) {
-                select.innerHTML = '<option value="">Henüz kullanılabilir şablon yok</option>';
-                select.disabled = true;
-                return;
-            }
-
-            select.disabled = false;
-
-            templates.forEach(template => {
-                if (!template || !template.templateId) return;
-
-                globalTemplates[template.templateId] = template;
-
-                const option = document.createElement('option');
-                option.value = template.templateId;
-                option.textContent = template.name || template.templateId;
-                select.appendChild(option);
+            
+            templates.forEach(t => {
+                globalTemplates[t.templateId] = t; 
+                select.innerHTML += `<option value="${t.templateId}">${t.name}</option>`;
             });
         }
 
         async function fetchInstances() {
-            const data = await apiFetch(`${API_URL}/instances`);
-            const instances = Array.isArray(data) ? data : [];
+            const res = await fetch(`${API_URL}/instances`);
+            const instances = await res.json();
             const tbody = document.getElementById('instancesTableBody');
-
             tbody.innerHTML = '';
 
-            if (instances.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5">
-                            <div class="empty-state">Henüz işlem kaydı bulunmuyor.</div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
             instances.forEach(inst => {
-                if (!inst) return;
-
-                let actionButtons = '';
+                let actionButtons = ''; 
                 let requiredRole = '-';
 
-                const template = globalTemplates[inst.templateId];
-                const state = template?.states?.[inst.currentState];
-
-                if (formatStatus(inst.status) === 'ACTIVE' && state) {
-                    requiredRole = state.assigneeRole || '-';
+                if (inst.status === 'ACTIVE' && globalTemplates[inst.templateId]) {
+                    requiredRole = globalTemplates[inst.templateId].states[inst.currentState].assigneeRole;
 
                     if (currentRole === requiredRole) {
-                        actionButtons = `
-                            <button
-                                class="btn btn-success me-2"
-                                type="button"
-                                onclick="completeTask('${escapeHtml(String(inst.id || ''))}', 'APPROVE')">
-                                Onayla
-                            </button>
-                        `;
+                        // Onayla butonu Apple tarzı Mavi renk (btn-success sınıfı css'de maviye ayarlandı)
+                        actionButtons = `<button class="btn btn-success me-2" onclick="completeTask('${inst.id}', 'APPROVE')">Onayla</button>`;
                     } else {
-                        actionButtons = `
-                            <span class="badge rounded-pill bg-light text-muted border py-2 px-3 me-2">
-                                Yetki Bekleniyor
-                            </span>
-                        `;
+                        actionButtons = `<span class="badge rounded-pill bg-light text-muted border py-2 px-3 me-2">Yetki Bekleniyor</span>`;
                     }
                 }
 
-                const logs = Array.isArray(inst.auditLogs)
-                    ? inst.auditLogs.map(log => String(log)).join('\n')
-                    : 'Kayıt yok.';
+                const historyLogs = inst.auditLogs ? inst.auditLogs.join('\\n') : 'Kayıt yok.';
+                const historyButton = `<button class="btn btn-info" onclick="alert('SÜREÇ TARİHÇESİ:\\n\\n${historyLogs}')">Log</button>`;
+                
+                actionButtons += historyButton;
 
-                const safeLogs = escapeHtml(logs)
-                    .replace(/\\n/g, '<br>')
-                    .replace(/\n/g, '<br>');
-
-                const templateName = template?.name || inst.templateId || '-';
-                const instanceId = String(inst.id || '');
-                const shortId = instanceId ? instanceId.substring(0, 8) : '-';
-                const status = formatStatus(inst.status);
-                const stateText = formatState(inst.currentState);
-
-                const logId = `log-${Math.random().toString(36).slice(2)}`;
-
-                actionButtons += `
-                    <button
-                        class="btn btn-info"
-                        type="button"
-                        onclick="showLog('${logId}')">
-                        Log
-                    </button>
-                `;
-
-                tbody.insertAdjacentHTML('beforeend', `
+                tbody.innerHTML += `
                     <tr>
+                        <td><strong class="text-dark">${globalTemplates[inst.templateId]?.name || inst.templateId}</strong><br><small class="text-muted">ID: ${inst.id.substring(0,8)}</small></td>
+                        <td><span class="text-dark fw-medium">@${inst.initiator}</span></td>
                         <td>
-                            <strong class="text-dark">${escapeHtml(templateName)}</strong><br>
-                            <small class="text-muted">ID: ${escapeHtml(shortId)}</small>
-                            <div id="${logId}" class="d-none">${safeLogs}</div>
+                            <span class="status-${inst.status}">${inst.status}</span><br>
+                            <small class="text-muted">${inst.currentState.replace(/_/g, ' ')}</small>
                         </td>
-                        <td>
-                            <span class="text-dark fw-medium">@${escapeHtml(inst.initiator || '-')}</span>
-                        </td>
-                        <td>
-                            <span class="status-${escapeHtml(status)}">${escapeHtml(status)}</span><br>
-                            <small class="text-muted">${escapeHtml(stateText)}</small>
-                        </td>
-                        <td>
-                            <span class="badge rounded-pill bg-secondary bg-opacity-10 text-dark border">${escapeHtml(requiredRole)}</span>
-                        </td>
+                        <td><span class="badge rounded-pill bg-secondary bg-opacity-10 text-dark border">${requiredRole}</span></td>
                         <td class="text-end">${actionButtons}</td>
                     </tr>
-                `);
+                `;
             });
-        }
-
-        function showLog(elementId) {
-            const element = document.getElementById(elementId);
-            if (!element) {
-                alert('Süreç geçmişi bulunamadı.');
-                return;
-            }
-
-            const text = element.innerHTML
-                .replace(/<br\s*\/?>/gi, '\n')
-                .replace(/&amp;/g, '&')
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&#039;/g, "'");
-
-            alert(`SÜREÇ TARİHÇESİ:\n\n${text}`);
         }
 
         async function startProcess() {
             const templateId = document.getElementById('templateSelect').value;
+            if(!templateId) return;
 
-            if (!templateId) {
-                alert('Başlatılacak bir iş akışı şablonu seçiniz.');
-                return;
-            }
-
-            if (!currentUsername) {
-                alert('Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapınız.');
-                return;
-            }
-
-            setButtonLoading('startProcessButton', true, 'Başlatılıyor...');
-
-            try {
-                const url = `${API_URL}/instances/start?templateId=${encodeURIComponent(templateId)}&initiator=${encodeURIComponent(currentUsername)}`;
-                await apiFetch(url, { method: 'POST' });
-
-                await fetchInstances();
-                alert('Süreç başarıyla başlatıldı.');
-            } catch (error) {
-                alert(`Süreç başlatılamadı: ${getErrorMessage(error)}`);
-            } finally {
-                setButtonLoading('startProcessButton', false);
-            }
+            await fetch(`${API_URL}/instances/start?templateId=${templateId}&initiator=${currentUsername}`, { method: 'POST' });
+            fetchInstances(); 
         }
 
         async function completeTask(instanceId, transition) {
-            if (!instanceId) {
-                alert('Geçersiz işlem kaydı.');
-                return;
-            }
-
-            if (!currentUsername || !currentRole) {
-                alert('Oturum bilgisi bulunamadı.');
-                return;
-            }
-
-            try {
-                const completedBy = `${currentUsername} (${currentRole})`;
-                const url = `${API_URL}/instances/${encodeURIComponent(instanceId)}/complete?transition=${encodeURIComponent(transition)}&completedBy=${encodeURIComponent(completedBy)}`;
-
-                await apiFetch(url, { method: 'POST' });
-                await fetchInstances();
-                alert('İşlem başarıyla tamamlandı.');
-            } catch (error) {
-                alert(`İşlem tamamlanamadı: ${getErrorMessage(error)}`);
-            }
+            const completedBy = `${currentUsername} (${currentRole})`;
+            await fetch(`${API_URL}/instances/${instanceId}/complete?transition=${transition}&completedBy=${completedBy}`, { method: 'POST' });
+            fetchInstances(); 
         }
 
-        function resetDesignerForm() {
-            document.getElementById('designerForm').reset();
-            document.getElementById('designerError').classList.add('d-none');
-            document.getElementById('designerError').textContent = '';
-        }
+        function submitNewTemplate() {
+            const templateId = document.getElementById('d_templateId').value.toUpperCase();
+            const name = document.getElementById('d_name').value;
+            const role = document.getElementById('d_role').value.toUpperCase();
 
-        async function submitNewTemplate(event) {
-            event.preventDefault();
-
-            const templateId = document.getElementById('d_templateId').value.trim().toUpperCase();
-            const name = document.getElementById('d_name').value.trim();
-            const role = document.getElementById('d_role').value.trim().toUpperCase();
-            const errorBox = document.getElementById('designerError');
-
-            errorBox.classList.add('d-none');
-            errorBox.textContent = '';
-
-            if (!templateId || !name || !role) {
-                errorBox.textContent = 'Lütfen tüm alanları doldurun!';
-                errorBox.classList.remove('d-none');
-                return;
+            if(!templateId || !name || !role) {
+                return alert("Lütfen tüm alanları doldurun!");
             }
 
-            if (!/^[A-Z0-9_-]+$/.test(templateId)) {
-                errorBox.textContent = 'Şablon ID yalnızca İngilizce büyük harf, rakam, alt çizgi (_) ve tire (-) içerebilir.';
-                errorBox.classList.remove('d-none');
-                return;
-            }
-
+            // Kullanıcının girdiği bilgilere göre hatasız JSON üretiliyor
             const processJson = {
                 templateId: templateId,
                 name: name,
-                initialState: 'FIRST_APPROVAL',
+                initialState: "FIRST_APPROVAL",
                 states: {
-                    FIRST_APPROVAL: {
-                        type: 'USER_TASK',
+                    "FIRST_APPROVAL": {
+                        type: "USER_TASK",
                         assigneeRole: role,
-                        transitions: {
-                            APPROVE: 'COMPLETED',
-                            REJECT: 'REJECTED'
+                        transitions: { 
+                            "APPROVE": "COMPLETED", 
+                            "REJECT": "REJECTED" 
                         }
                     },
-                    COMPLETED: { type: 'END_EVENT' },
-                    REJECTED: { type: 'END_EVENT' }
+                    "COMPLETED": { type: "END_EVENT" },
+                    "REJECTED": { type: "END_EVENT" }
                 }
             };
 
-            setButtonLoading('designerSubmitButton', true, 'Oluşturuluyor...');
-
-            try {
-                await apiFetch(`${API_URL}/templates`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(processJson)
-                });
-
-                const modalElement = document.getElementById('designerModal');
-                const modal = bootstrap.Modal.getInstance(modalElement) || bootstrap.Modal.getOrCreateInstance(modalElement);
-                modal.hide();
-                resetDesignerForm();
-
-                await fetchTemplates();
-                alert('Süreç taslağı başarıyla oluşturuldu.');
-            } catch (error) {
-                errorBox.textContent = `Süreç oluşturulamadı: ${getErrorMessage(error)}`;
-                errorBox.classList.remove('d-none');
-            } finally {
-                setButtonLoading('designerSubmitButton', false);
-            }
+            // Senin mevcut API url'ine gönderiyoruz (Render'da çalışsın diye dinamik yapabilirsin)
+            fetch(API_URL + '/templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(processJson)
+            })
+            .then(r => r.json())
+            .then(data => {
+                alert("Süreç taslağı başarıyla oluşturuldu! Yönetici (MANAGER) onayladığında listeye eklenecektir.");
+                location.reload(); 
+            })
+            .catch(err => alert("Süreç gönderilirken hata oluştu."));
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('loginPassword').addEventListener('keydown', event => {
-                if (event.key === 'Enter') performLogin();
-            });
-
-            document.getElementById('loginUsername').addEventListener('keydown', event => {
-                if (event.key === 'Enter') performLogin();
-            });
-
-            document.getElementById('designerModal').addEventListener('hidden.bs.modal', resetDesignerForm);
-        });
     </script>
-
-    <!-- Bootstrap JS Motoru -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
