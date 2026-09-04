@@ -239,17 +239,7 @@
             <h4 class="fw-bold mb-1">Workspace</h4>
             <p class="text-muted mb-4 small">BPM Motoru Yönetim Paneli</p>
             
-            <div class="text-start mb-3">
-                <label class="form-label text-muted small fw-bold">Giriş Yapılacak Rol</label>
-                 <select id="loginRole" class="form-select">
-                   <option value="EMPLOYEE">Standart Çalışan</option>
-                   <option value="MANAGER">Yönetici (Manager)</option>
-                   <option value="IT">IT Uzmanı</option>
-                   <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
-                   <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
-                   <option value="HR">İnsan Kaynakları</option>
-                 </select>
-            </div>
+            
             <div class="text-start mb-3">
                 <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
                 <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz" />
@@ -369,12 +359,18 @@
                             
                             <!-- Dinamik Node'lar Buraya Eklenecek -->
                             <div class="d-flex align-items-center flex-shrink-0" id="dynamicNodes">
-                                <!-- Varsayılan İlk Adım -->
-                                <div class="blueprint-node task-node d-flex flex-column align-items-center">
-                                    <small class="text-primary fw-bold mb-1">USER TASK</small>
-                                    <input type="text" class="node-input role-input" placeholder="Rol (Örn: MANAGER)">
-                                </div>
+                                     <!-- Varsayılan İlk Adım -->
+                            <div class="blueprint-node task-node d-flex flex-column align-items-center">
+                              <small class="text-primary fw-bold mb-1">USER TASK</small>
+                                  <select class="node-input role-input">
+                                        <option value="MANAGER">Yönetici (MANAGER)</option>
+                                        <option value="IT">IT Uzmanı (IT)</option>
+                                        <option value="HR">İnsan Kaynakları (HR)</option>
+                                        <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
+                                        <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
+                                   </select>
                             </div>
+                          </div>
                             
                             <!-- End Node -->
                             <div class="blueprint-arrow ms-2">➔</div>
@@ -406,22 +402,42 @@
         let currentRole = '';
         let currentUsername = '';
 
+       const userDatabase = {
+            "muhammed": "IT",         
+            "ahmet": "MANAGER",
+            "ayse": "HR",
+            "mehmet": "ACCOUNTANT",
+            "fatma": "SECURITY_ADMIN",
+            "ali": "EMPLOYEE"
+        };
+
         function performLogin() {
-            const role = document.getElementById('loginRole').value;
-            const user = document.getElementById('loginUsername').value;
+            // Kullanıcının girdiği adı küçük harfe çevirip boşlukları siliyoruz (örn: " Muhammed " -> "muhammed")
+            const user = document.getElementById('loginUsername').value.trim().toLowerCase();
             const pass = document.getElementById('loginPassword').value;
 
             if (!user) return alert("Lütfen kullanıcı adı giriniz!");
             if (pass !== "1234") return alert("Hatalı şifre! (1234 giriniz)");
 
+            // Arka plandaki sözlüğümüze soruyoruz: Bu adamın rolü ne?
+            const role = userDatabase[user];
+
+            if (!role) {
+                // Sözlükte yoksa girişi engelliyoruz
+                return alert("Sistemde böyle bir kullanıcı bulunamadı! (Kayıtlı isimler: muhammed, ahmet, ayse, mehmet, fatma, ali)");
+            }
+
+            // Rolü ve ismi sisteme tanımlıyoruz
             currentRole = role;
-            currentUsername = user;
+            
+            // Ekranda güzel görünmesi için ismin ilk harfini büyütüyoruz (örn: "muhammed" -> "Muhammed")
+            currentUsername = user.charAt(0).toUpperCase() + user.slice(1); 
 
             document.getElementById('loginScreenWrapper').style.display = 'none';
             document.getElementById('dashboardScreen').style.display = 'block';
 
-            document.getElementById('loggedInUserInfo').innerText = `${user} (${role})`;
-            document.getElementById('initiatorInput').value = user;
+            document.getElementById('loggedInUserInfo').innerText = `${currentUsername} (${role})`;
+            document.getElementById('initiatorInput').value = currentUsername;
 
             loadDashboardData();
         }
@@ -509,7 +525,7 @@
         }
 
         // --- BLUEPRINT NODE EKLEME FONKSİYONU ---
-        function addBlueprintNode() {
+       function addBlueprintNode() {
             const container = document.getElementById('dynamicNodes');
             
             // Ok (Arrow)
@@ -522,7 +538,13 @@
             node.className = 'blueprint-node task-node d-flex flex-column align-items-center';
             node.innerHTML = `
                 <small class="text-primary fw-bold mb-1">USER TASK</small>
-                <input type="text" class="node-input role-input" placeholder="Rol (Örn: IT)">
+                <select class="node-input role-input">
+                    <option value="MANAGER">Yönetici (MANAGER)</option>
+                    <option value="IT">IT Uzmanı (IT)</option>
+                    <option value="HR">İnsan Kaynakları (HR)</option>
+                    <option value="ACCOUNTANT">Muhasebe Uzmanı</option>
+                    <option value="SECURITY_ADMIN">Güvenlik (Sec-Admin)</option>
+                </select>
                 <button type="button" class="btn btn-sm btn-danger mt-2 w-100 py-0" style="border-radius: 4px; font-size:11px;" onclick="this.parentElement.previousElementSibling.remove(); this.parentElement.remove();">SİL</button>
             `;
             
