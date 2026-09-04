@@ -42,23 +42,28 @@ public class ProcessController {
     }
 
     // --- SÜREÇ YÖNETİMİ İÇİN (POST) - META PROCESS ---
+    
+    // DİKKAT: initiator parametresi eklendi. Arayüzden kimse gönderilmezse varsayılan olarak SYSTEM kalacak.
     @PostMapping("/templates")
-    public ResponseEntity<ProcessTemplate> createTemplate(@RequestBody ProcessTemplate template) {
+    public ResponseEntity<ProcessTemplate> createTemplate(
+            @RequestBody ProcessTemplate template,
+            @RequestParam(required = false, defaultValue = "SYSTEM") String initiator) {
+            
         // 1. Yeni gelen süreci güvenlik amacıyla zorla DRAFT (Taslak) statüsüne çekiyoruz
         template.setStatus("DRAFT");
         ProcessTemplate savedTemplate = templateRepo.save(template);
 
-        // 2. Hocanın vizyonu: "Sürecin Süreci" (Meta-Process) burada tetikleniyor!
+        // 2. "Sürecin Süreci" (Meta-Process) burada tetikleniyor!
         try {
             // Null hatalarına karşı kurşun geçirmez HashMap yapısı
             Map<String, Object> variables = new HashMap<>();
             variables.put("targetTemplateId", savedTemplate.getTemplateId());
             variables.put("targetTemplateName", savedTemplate.getName());
 
-            // Sisteme yeni bir süreç eklendiğinde, motor kendi onay akışını başlatır.
-            engineService.startProcess("TEMPLATE_APPROVAL_V1", "SYSTEM", variables);
+            // Sisteme yeni bir süreç eklendiğinde, motor kendi onay akışını BAŞLATAN KİŞİ adına başlatır.
+            engineService.startProcess("TEMPLATE_APPROVAL_V1", initiator, variables);
             
-            System.out.println("Meta-Process Başarıyla Tetiklendi! Bekleyen Süreç: " + savedTemplate.getTemplateId());
+            System.out.println("Meta-Process Başarıyla Tetiklendi! Bekleyen Süreç: " + savedTemplate.getTemplateId() + " | Başlatan: " + initiator);
         } catch (Exception e) {
             // Hata artık sessizce yutulmayacak, terminalde kırmızıyla tüm detaylarıyla bağıracak!
             System.err.println("DİKKAT! Meta-Process (Şablon Onay Süreci) tetiklenirken hata oluştu!");

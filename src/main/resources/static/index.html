@@ -239,7 +239,6 @@
             <h4 class="fw-bold mb-1">Workspace</h4>
             <p class="text-muted mb-4 small">BPM Motoru Yönetim Paneli</p>
             
-            
             <div class="text-start mb-3">
                 <label class="form-label text-muted small fw-bold">Kullanıcı Adı</label>
                 <input type="text" id="loginUsername" class="form-control" placeholder="Adınızı giriniz" />
@@ -424,7 +423,7 @@
 
             if (!role) {
                 // Sözlükte yoksa girişi engelliyoruz
-                return alert("Sistemde böyle bir kullanıcı bulunamadı! (Kayıtlı isimler: muhammed, ahmet, ayse, mehmet, fatma, ali)");
+                return alert("Sistemde böyle bir kullanıcı bulunamadı!");
             }
 
             // Rolü ve ismi sisteme tanımlıyoruz
@@ -495,9 +494,17 @@
                 
                 actionButtons += historyButton;
 
+                // --- İSİM DÜZELTME MANTIĞI EKLENDİ ---
+                let processName = globalTemplates[inst.templateId]?.name || inst.templateId;
+                
+                // Eğer bu bir Sistem Onay Süreciyse ve arkada değişken (variables) kayıtlıysa:
+                if (inst.templateId === 'TEMPLATE_APPROVAL_V1' && inst.variables && inst.variables.targetTemplateName) {
+                    processName = "Şablon Onayı: " + inst.variables.targetTemplateName;
+                }
+
                 tbody.innerHTML += `
                     <tr>
-                        <td><strong class="text-dark">${globalTemplates[inst.templateId]?.name || inst.templateId}</strong><br><small class="text-muted">ID: ${inst.id.substring(0,8)}</small></td>
+                        <td><strong class="text-dark">${processName}</strong><br><small class="text-muted">ID: ${inst.id.substring(0,8)}</small></td>
                         <td><span class="text-dark fw-medium">@${inst.initiator}</span></td>
                         <td>
                             <span class="status-${inst.status}">${inst.status}</span><br>
@@ -595,7 +602,8 @@
                 states: states
             };
 
-            fetch(API_URL + '/templates', {
+            // --- INITIATOR URL'E EKLENDİ ---
+            fetch(API_URL + '/templates?initiator=' + encodeURIComponent(currentUsername), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(processJson)
